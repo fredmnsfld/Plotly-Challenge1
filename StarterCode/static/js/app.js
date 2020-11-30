@@ -1,5 +1,6 @@
 // A. DATA SETUP
 // 1. Access data using d3.jason call to samples.jason (heather video)
+// build function to be called when page load or item selected
 
 function buildSample(value){
   d3.json('samples.json').then(data => {
@@ -9,8 +10,10 @@ function buildSample(value){
   // 2. Create Variables/Arrays for traces
     // Test subject ID for drop down
     let subjects = data.names;
-    console.log (subjects);
-    
+   
+    var newSub = subjects.map(val => "OTU"+String(val));
+    console.log (newSub);
+    newSubSlice = newSub.slice(0,10);
     // put top 10 samples values in aray for x-axis
     let sample = value;
     let samples = data.samples;
@@ -42,7 +45,7 @@ function buildSample(value){
   // C. Plot horizontal bar chart
   var trace1 = {
     x: filtValuesSlice,
-    y: filtOtuSlice,
+    y: newSubSlice,
     text: filtOtuLablesSlice,
     type: "bar",
     orientation: "h"
@@ -59,6 +62,31 @@ function buildSample(value){
 
   // 3. put metadata info in demographic info area from filter above
 
+
+ 
+// // D. Plot Bubble Chart
+    var trace2 = {
+      x: subjects,
+      y: filteredSamples[0].sample_values,
+      text: filteredSamples[0].otu_labels,
+      mode: 'markers',
+      marker: {
+        
+        size: filteredSamples[0].sample_values,
+        sizeref: .1,
+        sizemode: 'area',
+        color: filteredSamples[0].otu_ids,
+    }}
+    var bubbledata = [trace2]
+    var bubblelayout = {
+      title: "OTU Prevalence in Sample",
+      xaxis: {title: 'OTU ID Number'},
+      yaxis: {title: 'Prevalence in Sample'},
+    }
+
+    Plotly.newPlot("bubble", bubbledata, bubblelayout);
+
+
   });
 }
 
@@ -66,51 +94,5 @@ function getData(value) {
   buildSample(value);
 }
 
+// default chart upon page load
 buildSample(940);
-
-// optionchange -- pass in filtered samples
- 
-
-
-
-// // Display default plot
-
-// function init() {
-//   var data = [{
-//     values: us,
-//     labels: labels,
-//     type: "pie"
-//   }];
-
-//   var layout = {
-//     height: 600,
-//     width: 800
-//   };
-
-//   Plotly.newPlot("pie", data, layout);
-// }
-
-// // D. Plot Bubble Chart
-
-//   // Call function to update the chart
-//   updatePlotly(data);
-// }
-
-// // Update the restyled plot's values
-// function updatePlotly(newdata) {
-//   Plotly.restyle("pie", "values", [newdata]);
-// }
-
-// init();
-
-
-// // call update plotly when a change takes place to the DOM
-
-
-// // event handler select drop down
-// let dropdown = d3.select('#selDatasets')
-// console.log(dropdown)
-
-// dropdown.on('change', function(){
-//     console.log(d3.event.target.id ,d3.event.target.value)
-// })
